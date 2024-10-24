@@ -9,13 +9,13 @@ from pathlib import Path
 import keyring
 
 
-def run(
+def train_model(
     model_format: str = "yolov5s",
     img_width: int = 160,
     dataset_version: int = 13,
     epochs: int = 1,
     overwrite: bool = False,
-):
+) -> Path:
     """
     Train model using yolov5-pip's train.run
     Saves models to standardized BEACHBOT_MODELS directory
@@ -32,6 +32,10 @@ def run(
         epochs: int
         overwrite: bool
     Returns:
+        # Directory containing results from yolov5-pip/train.run
+        # To get actual model weights use
+        # os.path.join(model_path, "weights", "best.pt")
+        model_path: Path
 
     """
 
@@ -96,6 +100,8 @@ def run(
     print(f"Copying {opt.save_dir} to {model_path}")
     shutil.copytree(Path(opt.save_dir), Path(model_path), dirs_exist_ok=True)
     shutil.rmtree(Path(runs_dir))
+
+    return model_path
 
 
 if __name__ == "__main__":
