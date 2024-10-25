@@ -1,6 +1,9 @@
 from platformdirs import PlatformDirs
 import os
+import beachbot_od
 
+BEACHBOT_OD_PATH = os.path.dirname(beachbot_od.__file__)
+BEACHBOT_OD_TESTS = os.path.join(BEACHBOT_OD_PATH, "tests")
 
 # Define the directory paths you want to make available globally
 _platform_dirs = PlatformDirs("beachbot_od", "okinawa-ai-beach-robot")
@@ -43,6 +46,9 @@ os.makedirs(BEACHBOT_MODELS, exist_ok=True)
 os.makedirs(BEACHBOT_DATASETS, exist_ok=True)
 
 # Optionally print for debugging (remove in production)
+print(f"BEACHBOT_OD_PATH: {BEACHBOT_OD_PATH}")
+print(f"BEACHBOT_OD_TESTS: {BEACHBOT_OD_TESTS}")
+print(f"BEACHBOT_OD_CONFIG: {BEACHBOT_OD_CONFIG}")
 print(f"BEACHBOT_HOME: {BEACHBOT_HOME}")
 print(f"BEACHBOT_CACHE: {BEACHBOT_CACHE}")
 print(f"BEACHBOT_CONFIG: {BEACHBOT_CONFIG}")
