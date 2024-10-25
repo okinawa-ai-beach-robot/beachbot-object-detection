@@ -2,15 +2,15 @@
 import logging
 import sys
 
+# Create and configure the package-wide logger
+logger = logging.getLogger("beachbot_od")
+logger.setLevel(logging.INFO)  # Set default level; adjust as needed
 
-def setup_logging(level=logging.INFO):
-    # Basic configuration
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[logging.StreamHandler(sys.stdout)],  # Output to console
-    )
+# Set up a console handler with a simple format
+console_handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+console_handler.setFormatter(formatter)
 
-
-# Call this function when the package is loaded or from a main entry point
-setup_logging()
+# Avoid adding multiple handlers if the logger is reused
+if not logger.hasHandlers():
+    logger.addHandler(console_handler)
