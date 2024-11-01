@@ -2,6 +2,7 @@ from beachbot_od.utils.models import (
     get_model_path,
     model_exists,
     get_base_model_weights_path,
+    SupportedModels,
 )
 from yolov5 import train
 import shutil
@@ -10,7 +11,7 @@ import keyring
 
 
 def train_model(
-    model_format: str = "yolov5s",
+    model_format: SupportedModels = SupportedModels.YOLOV5S,
     img_width: int = 160,
     dataset_version: int = 13,
     epochs: int = 1,
@@ -26,7 +27,7 @@ def train_model(
     e.g. yolov5-pip/yolov5/beach-cleaning-object-detection-13
 
     Args:
-        model_format: str
+        model_format: SupportedModels
         imgsz: int
         dataset_version: int
         epochs: int
