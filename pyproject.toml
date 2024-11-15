@@ -23,7 +23,6 @@ dependencies = [
     "keyring==25.4.1",
     "pandas==2.0.3",
     "ultralytics==8.3.13",
-    "beachbot==0.0.2"
 ]
 
 [project.urls]
