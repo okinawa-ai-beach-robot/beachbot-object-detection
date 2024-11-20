@@ -30,11 +30,11 @@ def load_config_file(config_type: CONFIG_TYPE, config_path: Path = None) -> dict
     """
 
     if config_path is None:
-        if config_type == 1:
+        if config_type == CONFIG_TYPE.ROBOFLOW:
             filename = "roboflow_version_config.yaml"
             config_path = Path(config.BEACHBOT_CONFIG / filename)
             config_src_path = Path(BEACHBOT_OD_PATH) / "config" / filename
-        if config_type == 2:
+        if config_type == CONFIG_TYPE.HF_MODEL_CARD:
             filename = "model_card_config.yaml"
             config_path = Path(config.BEACHBOT_CONFIG / filename)
             config_src_path = Path(BEACHBOT_OD_PATH) / "config" / filename
@@ -46,6 +46,8 @@ def load_config_file(config_type: CONFIG_TYPE, config_path: Path = None) -> dict
             logging.info(
                 f"Config file not found at {config_path}. Copying from {config_src_path}."
             )
+            # Ensure config_path parent directories exist
+            config_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(config_src_path, config_path)
 
     # Load the YAML configuration file
