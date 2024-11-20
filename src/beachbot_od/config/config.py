@@ -1,4 +1,4 @@
-import beachbot_od.__file__
+import beachbot_od
 from beachbot.config import config
 from enum import Enum
 import shutil
@@ -35,7 +35,7 @@ def load_config_file(config_type: CONFIG_TYPE, config_path: Path = None) -> dict
             config_path = Path(config.BEACHBOT_CONFIG / filename)
             config_src_path = Path(BEACHBOT_OD_PATH) / "config" / filename
         if config_type == 2:
-            filename = "roboflow_version_config.yaml"
+            filename = "model_card_config.yaml"
             config_path = Path(config.BEACHBOT_CONFIG / filename)
             config_src_path = Path(BEACHBOT_OD_PATH) / "config" / filename
         logging.info(
