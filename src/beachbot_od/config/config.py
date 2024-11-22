@@ -1,21 +1,18 @@
 import beachbot_od
-from beachbot.config import config
+from beachbot.config import logger
 from enum import Enum
 import shutil
 from pathlib import Path
 import os
-import logging
 import yaml
 
 
 BEACHBOT_OD_PATH = Path(os.path.dirname(beachbot_od.__file__))
 BEACHBOT_OD_TESTS = Path(os.path.join(BEACHBOT_OD_PATH, "tests"))
-config.BEACHBOT_OD_PATH = BEACHBOT_OD_PATH
-config.BEACHBOT_OD_TESTS = BEACHBOT_OD_TESTS
 
 # Optionally print for debugging (remove in production)
-logging.info(f"BEACHBOT_OD_PATH: {BEACHBOT_OD_PATH}")
-logging.info(f"BEACHBOT_OD_TESTS: {BEACHBOT_OD_TESTS}")
+logger.info(f"BEACHBOT_OD_PATH: {BEACHBOT_OD_PATH}")
+logger.info(f"BEACHBOT_OD_TESTS: {BEACHBOT_OD_TESTS}")
 
 
 class CONFIG_TYPE(Enum):
@@ -38,12 +35,12 @@ def load_config_file(config_type: CONFIG_TYPE, config_path: Path = None) -> dict
             filename = "model_card_config.yaml"
             config_path = Path(config.BEACHBOT_CONFIG / filename)
             config_src_path = Path(BEACHBOT_OD_PATH) / "config" / filename
-        logging.info(
+        logger.info(
             f"Config file not specified, using default location of {config_path}."
         )
         if not config_path.exists():
             # Copy file from beachbot_od to user config directory
-            logging.info(
+            logger.info(
                 f"Config file not found at {config_path}. Copying from {config_src_path}."
             )
             # Ensure config_path parent directories exist
