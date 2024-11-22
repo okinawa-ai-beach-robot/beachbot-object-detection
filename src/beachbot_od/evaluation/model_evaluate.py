@@ -1,29 +1,36 @@
 from globox import AnnotationSet, COCOEvaluator, BoxFormat
 import torch
-import os
-import argparse
 from pathlib import Path
 import shutil
-from beachbot_od import bb_logger
+from beachbot.config import logger
 
 
-def model_evaluate(model_path, dataset_path):
-    if not os.path.exists(model_path):
+def model_evaluate(model_path: Path, weights_path: Path, dataset_path: Path):
+    if not model_path.exists():
         RuntimeError("Model not found")
-    if not os.path.exists(dataset_path):
+    if not weights_path.exists():
+        RuntimeError("Weights not found")
+    if not dataset_path.exists():
         RuntimeError("Dataset not found")
 
-    gt_label_path = dataset_path + "/test/_annotations.coco.json"
-    if not os.path.exists(gt_label_path):
+    test_dataset_path = dataset_path / "test"
+    gt_label_path = test_dataset_path / "_annotations.coco.json"
+
+    if not gt_label_path.exists():
         raise ValueError(f"{gt_label_path} does not exist")
+
+    # Make detections parent folder to hold model-specific detections
+    detections_path = model_path / "detections"
+    detections_path.mkdir(parents=True, exist_ok=True)
 
     gt = AnnotationSet.from_coco(
         file_path=gt_label_path,
     )
-    images = ["dataset/test/" + item for item in list(gt.image_ids)]
+    # replace path with reference to dataset_path
+    images = [test_dataset_path / item for item in list(gt.image_ids)]
 
     # Load model
-    model = torch.hub.load("ultralytics/yolov5", "custom", path=model_path)
+    model = torch.hub.load("ultralytics/yolov5", "custom", path=weights_path)
 
     # set model parameters
     model.conf = 0.70  # NMS confidence threshold
@@ -34,11 +41,11 @@ def model_evaluate(model_path, dataset_path):
 
     # Run inference on all images within dataset
     results = model(images)
-    results.save(save_dir="./detection_images", exist_ok=True)
+    results.save(save_dir=detections_path / "detection_images", exist_ok=True)
 
     # Remove cached or previous predictions:
-    if os.path.exists("detections"):
-        bb_logger.info("Removing previous detections")
+    if Path("detections").exists():
+        logger.info("Removing previous detections")
         shutil.rmtree("detections")
 
     # Loop over each image in results and save detection annotations
@@ -51,7 +58,7 @@ def model_evaluate(model_path, dataset_path):
             ["name", "xcenter", "ycenter", "width", "height", "confidence"]
         ]
 
-        filepath = Path(f"detections/{filename}.txt")
+        filepath = detections_path / f"{filename}.txt"
         filepath.parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(filepath, sep=" ", index=False, header=False)
 
@@ -59,8 +66,8 @@ def model_evaluate(model_path, dataset_path):
     # See https://github.com/laclouis5/globox/discussions/48
     # and https://github.com/laclouis5/globox/issues/49
     predictions = AnnotationSet.from_txt(
-        folder="./detections",
-        image_folder="./dataset/test",
+        folder=detections_path,
+        image_folder=test_dataset_path,
         box_format=BoxFormat.XYWH,
         relative=False,
         separator=None,
@@ -68,23 +75,4 @@ def model_evaluate(model_path, dataset_path):
     )
     evaluator = COCOEvaluator(ground_truths=gt, predictions=predictions)
     evaluator.show_summary()
-    evaluator.save_csv("evaluation.csv")
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--model_path",
-        type=str,
-        default="model.pt",
-        help="Path to model.pt file",
-    )
-    parser.add_argument(
-        "--gt_label_path",
-        type=str,
-        default="dataset",
-        help="Path to COCO format dataset",
-    )
-
-    args = parser.parse_args()
-    model_evaluate(model_path=args.model_path, dataset_path=args.gt_label_path)
+    evaluator.save_csv(model_path / "evaluation.csv")
