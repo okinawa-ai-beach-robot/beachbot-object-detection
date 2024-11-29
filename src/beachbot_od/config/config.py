@@ -1,5 +1,5 @@
 import beachbot_od
-from beachbot.config import logger
+from beachbot.config import config, logger
 from enum import Enum
 import shutil
 from pathlib import Path
