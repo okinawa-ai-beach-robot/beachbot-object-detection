@@ -45,3 +45,17 @@ version-file = "_version.py"
 log_cli = true
 log_cli_level = "INFO"
 log_level = "INFO"
+
+[tool.mypy]
+# Ignore missing imports globally
+ignore_missing_imports = false
+
+[[tool.mypy.overrides]]
+module = "huggingface_hub.*"
+ignore_missing_imports = true
+
+[tool.black]
+line-length = 80
+
+[tool.pydocstyle]
+ignore = ["D400","D212","D200"]
